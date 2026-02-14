@@ -23,12 +23,9 @@ def export_model_to_onnx(model, output_path: str, input_size: int, device="cpu")
         export_params=True,
         opset_version=18,
         do_constant_folding=True,
-        input_names=['input'],
+        input_names=['x'],
         output_names=['output'],
-        dynamic_axes={
-            'input': {0: 'batch_size'},
-            'output': {0: 'batch_size'}
-        }
+        dynamic_shapes={'x': {0: None}}
     )
 
     print("Model exported successfully.")
