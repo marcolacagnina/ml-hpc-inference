@@ -15,8 +15,8 @@ def test_onnx_export_execution(tmp_path):
     # temporary path: <tmp>/model.onnx
     output_file = tmp_path / "test_model.onnx"
 
-    # run export
-    export_model_to_onnx(str(output_file))
+    # run export, using input_size as SimpleMLP class
+    export_model_to_onnx(str(output_file), input_size=10)
 
     # check file exists
     assert output_file.exists(), "ONNX file was not created"
