@@ -52,14 +52,28 @@ jobs:
     - name: Code Checkout
       uses: actions/checkout@v3
 
-    - name: Install ONNX runtime and Cmake
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++
+        sudo apt-get install -y cmake g++ libyaml-cpp-dev
+        wget https://github.com/microsoft/onnxruntime/releases/download/v1.17.0/onnxruntime-linux-x64-1.17.0.tgz
+        tar -xvzf onnxruntime-linux-x64-1.17.0.tgz
+        export ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.17.0
 
     - name: Configure CMake
       run: |
         echo "Build simulation C++..."
         mkdir -p cpp_inference/build
         cd cpp_inference/build
-        # cmake ..
+        cmake .. \
+           -DONNXRUNTIME_DIR=$ONNXRUNTIME_HOME
+    
+    - name: Build C++ inference
+      run: |
+        cd cpp_inference/build
+        make -j$(nproc)
+    
+    - name: Run C++ inference test
+      run: |
+        cd cpp_inference/build
+        ./onnx_inference
