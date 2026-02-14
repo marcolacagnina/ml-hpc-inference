@@ -46,7 +46,7 @@ jobs:
   
   # JOB 2: Build C++ Inference Engine
   cpp-build-check:
-    needs: python-test-and-export # Start only if Python is OK
+    needs: python-test-and-export
     runs-on: ubuntu-latest
     steps:
     - name: Code Checkout
@@ -55,26 +55,29 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ libyaml-cpp-dev
-        wget https://github.com/microsoft/onnxruntime/releases/download/v1.17.0/onnxruntime-linux-x64-1.17.0.tgz
-        tar -xvzf onnxruntime-linux-x64-1.17.0.tgz
-        export ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.17.0
-        # Create symlink so #include <onnxruntime/onnxruntime_cxx_api.h> works
-        ln -s $ONNXRUNTIME_HOME/include $ONNXRUNTIME_HOME/include/onnxruntime
+        sudo apt-get install -y cmake g++ libyaml-cpp-dev wget tar
+
+    - name: Download and setup ONNX Runtime (Linux)
+      run: |
+        wget https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz
+        tar -xvzf onnxruntime-linux-x64-1.24.1.tgz
+        export ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1
+        # Symlink to make include compatible with #include <onnxruntime/...>
+        cd $ONNXRUNTIME_HOME/include
+        ln -s . onnxruntime
+        cd -
 
     - name: Configure CMake
       run: |
-        echo "Build simulation C++..."
         mkdir -p cpp_inference/build
         cd cpp_inference/build
-        cmake .. \
-           -DONNXRUNTIME_DIR=$ONNXRUNTIME_HOME
-    
+        cmake .. -DONNXRUNTIME_DIR=$ONNXRUNTIME_HOME
+
     - name: Build C++ inference
       run: |
         cd cpp_inference/build
         make -j$(nproc)
-    
+
     - name: Run C++ inference test
       run: |
         cd cpp_inference/build
