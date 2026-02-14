@@ -1,0 +1,65 @@
+name: ML & HPC CI Pipeline
+
+# Execute on each push or pull request in the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # JOB 1: Python Quality & Testing
+  # Download repository in the runner, install Python.
+  # Install dependencies. Install pytest for testing, flake8 for code quality
+  python-test-and-export:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+      
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # Install libraries for testing and linting
+        pip install pytest flake8 onnx
+
+    # Check for errors
+    - name: Linting with flake8
+      run: |
+        # Stop build if there are errors
+        flake8 ml_src tests --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Execute unit test
+      run: |
+        # test defined in tests/ folder
+        pytest tests/
+    
+    - name: Test ONNX export specifically
+      run: |
+        pytest tests/test_onnx_export.py -v
+  
+  # JOB 2: Build C++ Inference Engine
+  cpp-build-check:
+    needs: python-test-and-export # Start only if Python is OK
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v3
+
+    - name: Install ONNX runtime and Cmake
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++
+
+    - name: Configure CMake
+      run: |
+        echo "Build simulation C++..."
+        mkdir -p cpp_inference/build
+        cd cpp_inference/build
+        # cmake ..
