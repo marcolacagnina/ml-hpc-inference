@@ -48,12 +48,19 @@ def train(cfg: DictConfig):
             "epochs": cfg.training.epochs,
             "input_size": cfg.model.input_size,
             "hidden_size": cfg.model.hidden_size,
+            "seed": cfg.training.seed,
         })
 
         print(f"--- Training Configuration ---")
         print(f"Device: {cfg.training.device}")
         print(f"Epochs: {cfg.training.epochs}")
         print(f"Learning Rate: {cfg.training.learning_rate}")
+        print(f"SEED: {cfg.training.seed}")
+
+        SEED = cfg.training.seed
+        torch.manual_seed(SEED)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(SEED)
 
         # ================== Setup Device (Agnostic Hardware) ==================
         if cfg.training.device == "auto":

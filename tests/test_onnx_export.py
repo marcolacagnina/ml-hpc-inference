@@ -1,4 +1,7 @@
 import onnx
+import torch
+import onnxruntime as ort
+import numpy as np
 
 from ml_src.export_onnx import export_model_to_onnx
 from ml_src.model import SimpleMLP
@@ -27,3 +30,13 @@ def test_onnx_export_execution(tmp_path):
     # check ONNX model validity
     model = onnx.load(str(output_file))
     onnx.checker.check_model(model)
+
+    dummy_input = torch.randn(1, 10)
+
+    # Verify Onnx inference
+    ort_session = ort.InferenceSession(str(output_file))
+    dummy_input_np = dummy_input.numpy()
+    outputs = ort_session.run(None, {"x": dummy_input_np})
+
+    print("Output shape:", outputs[0].shape)
+    assert outputs[0].shape == (1, 1)  # Expected shape
