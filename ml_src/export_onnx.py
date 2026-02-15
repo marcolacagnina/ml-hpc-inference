@@ -1,4 +1,5 @@
 import torch
+from model import SimpleMLP
 
 def export_model_to_onnx(model, output_path: str, input_size: int, device="cpu"):
     """
@@ -29,4 +30,14 @@ def export_model_to_onnx(model, output_path: str, input_size: int, device="cpu")
     )
 
     print("Model exported successfully.")
+
+
+if __name__ == "__main__":
+    import os
+
+    os.makedirs("models", exist_ok=True)
+
+    model = SimpleMLP(input_size=10, hidden_size=20, output_size=1)
+    # Export
+    export_model_to_onnx(model=model, output_path="models/model.onnx", input_size=10)
 

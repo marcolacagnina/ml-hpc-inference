@@ -39,15 +39,7 @@ jobs:
 
       - name: Export model for C++ job
         run: |
-          mkdir -p models
-          cat <<EOF > export_model.py
-from ml_src.model import SimpleMLP
-from ml_src.export_onnx import export_model_to_onnx
-
-model = SimpleMLP(input_size=10, hidden_size=20, output_size=1)
-export_model_to_onnx(model=model, output_path="models/model.onnx", input_size=10)
-EOF
-          python export_model.py
+          python ml_src/export_onnx.py
 
       - name: Upload ONNX model artifact
         uses: actions/upload-artifact@v4
@@ -78,13 +70,14 @@ EOF
         run: |
           wget https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz
           tar -xvzf onnxruntime-linux-x64-1.24.1.tgz
-          echo "ONNXRUNTIME_HOME=$GITHUB_WORKSPACE/onnxruntime-linux-x64-1.24.1" >> $GITHUB_ENV
+          export ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1
+          echo "ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1" >> $GITHUB_ENV
 
       - name: Configure CMake
         run: |
           mkdir -p cpp_inference/build
           cd cpp_inference/build
-          cmake .. -DONNXRUNTIME_DIR=${{ env.ONNXRUNTIME_HOME }}
+          cmake .. -DONNXRUNTIME_DIR=$ONNXRUNTIME_HOME
 
       - name: Build C++ inference
         run: |
