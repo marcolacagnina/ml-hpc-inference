@@ -6,6 +6,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.1-red)
 ![ONNX](https://img.shields.io/badge/ONNX-1.24.1-orange)
 ![MLflow](https://img.shields.io/badge/MLflow-2.9-green)
+![Hydra](https://img.shields.io/badge/config-Hydra-89b8cd)
 ![pytest](https://img.shields.io/badge/Testing-pytest-brightgreen)
 ![Docker](https://img.shields.io/badge/Docker-20.10-blue)
 
