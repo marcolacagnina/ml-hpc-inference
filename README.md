@@ -15,7 +15,7 @@
 
 ## Introduction
 
-This works demonstrates a full ML & HPC inference pipeline, bridging the gap between Data Science research (Python) and strict Real-Time Production environments (C++), integrating:
+This project demonstrates a full ML & HPC inference pipeline, bridging the gap between Data Science research (Python) and strict Real-Time Production environments (C++), integrating:
 - Training a **PyTorch** MLP model with configurable hyperparameters using **Hydra**.
 - Tracking experiments and artifacts with **MLflow**.
 - Exporting models to **ONNX** format for high-performance inference.
@@ -23,7 +23,8 @@ This works demonstrates a full ML & HPC inference pipeline, bridging the gap bet
 - Dockerized environments for training and inference.
 - Continuous Integration (CI) via GitHub Actions.
 
-It is designed to showcase **MLOps** practices, deployment readiness, and HPC-aware inference pipelines.
+It is designed to showcase **MLOps** practices, deployment readiness, and HPC-aware inference pipelines. 
+**HPC-Ready Architecture**: the **C++** inference engine is designed to be integrated into low-latency environments (e.g., real-time control loops) where Python interpreters are not viable.
 
 ## Workflow Overview
 
