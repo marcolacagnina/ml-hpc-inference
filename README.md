@@ -86,6 +86,7 @@ python ml_src/train.py
 - Saves PyTorch model (`models/model.pth`) and ONNX model (`models/model.onnx`).
 
 **C++ Inference**
+
 Build and run
 ```bash
 cd cpp_inference/build
