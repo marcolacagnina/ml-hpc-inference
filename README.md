@@ -1,13 +1,15 @@
 # ML & HPC Inference
 
-![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-red)
-![ONNX](https://img.shields.io/badge/ONNX-1.24.1-orange)
-![MLflow](https://img.shields.io/badge/MLflow-green)
-![Docker](https://img.shields.io/badge/Docker-blue)
-![C++17](https://img.shields.io/badge/C%2B%2B-17-lightgrey)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)
+![C++17](https://img.shields.io/badge/C%2B%2B-17-lightgrey)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.1-red)
+![ONNX](https://img.shields.io/badge/ONNX-1.24.1-orange)
+![MLflow](https://img.shields.io/badge/MLflow-2.9-green)
 ![pytest](https://img.shields.io/badge/Testing-pytest-brightgreen)
+![Docker](https://img.shields.io/badge/Docker-20.10-blue)
+
+
 
 <details> <summary><strong>Table of Contents</strong></summary> <ol> <li><a href="#introduction">Introduction</a></li> <li><a href="#workflow-overview">Workflow Overview</a></li> <li><a href="#dataset">Dataset</a></li> <li><a href="#prerequisites">Prerequisites</a></li> <li><a href="#installation">Installation</a></li> <li><a href="#usage">Usage</a></li> <li><a href="#outputs">Outputs</a></li> <li><a href="#docker">Docker</a></li> <li><a href="#continuous-integration">Continuous Integration</a></li> </ol> </details>
 
