@@ -43,6 +43,21 @@ jobs:
     - name: Test ONNX export specifically
       run: |
         pytest tests/test_onnx_export.py -v
+    
+    - name: Export model for C++ job
+      run: |
+        mkdir -p models
+        python -c " from ml_src.model import SimpleMLP
+        from ml_src.export_onnx import export_model_to_onnx
+        model = SimpleMLP(input_size=10, hidden_size=20, output_size=1)
+        export_model_to_onnx(model=model, output_path='models/model.onnx', input_size=10)"
+    
+    - name: Upload ONNX model artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: exported-model
+        path: models/model.onnx
+
   
   # JOB 2: Build C++ Inference Engine
   cpp-build-check:
@@ -51,6 +66,13 @@ jobs:
     steps:
     - name: Code Checkout
       uses: actions/checkout@v3
+    
+    - name: Download ONNX model
+      uses: actions/download-artifact@v4
+      with:
+        name: exported-model
+        path: models
+
 
     - name: Install dependencies
       run: |
