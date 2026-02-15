@@ -62,10 +62,7 @@ jobs:
         wget https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz
         tar -xvzf onnxruntime-linux-x64-1.24.1.tgz
         export ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1
-        # Symlink to make include compatible with #include <onnxruntime/...>
-        cd $ONNXRUNTIME_HOME/include
-        ln -s . onnxruntime
-        cd -
+        echo "ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1" >> $GITHUB_ENV
 
     - name: Configure CMake
       run: |

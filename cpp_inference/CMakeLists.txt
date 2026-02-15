@@ -6,18 +6,38 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ------------------ ONNX Runtime ------------------
-# Check if ONNXRUNTIME_DIR is defined (passed from CI)
+# Path priority:
+# 1) -DONNXRUNTIME_DIR passed manually or from CI
+# 2) macOS Homebrew default
+
 if(DEFINED ONNXRUNTIME_DIR)
-    message(STATUS "Using ONNX Runtime from ONNXRUNTIME_DIR=${ONNXRUNTIME_DIR}")
     set(ONNXRUNTIME_ROOT "${ONNXRUNTIME_DIR}")
+    message(STATUS "Using ONNX Runtime from ONNXRUNTIME_DIR=${ONNXRUNTIME_ROOT}")
 else()
-    # Default for macOS Homebrew
     set(ONNXRUNTIME_ROOT "/opt/homebrew/opt/onnxruntime")
     message(STATUS "Using default ONNX Runtime path: ${ONNXRUNTIME_ROOT}")
 endif()
 
-include_directories(${ONNXRUNTIME_ROOT}/include)
-link_directories(${ONNXRUNTIME_ROOT}/lib)
+# Find headers
+find_path(ONNXRUNTIME_INCLUDE_DIR
+    NAMES onnxruntime_cxx_api.h
+    PATHS
+        ${ONNXRUNTIME_ROOT}/include
+        ${ONNXRUNTIME_ROOT}/include/onnxruntime
+)
+
+# Find library
+find_library(ONNXRUNTIME_LIB
+    NAMES onnxruntime
+    PATHS ${ONNXRUNTIME_ROOT}/lib
+)
+
+if(NOT ONNXRUNTIME_INCLUDE_DIR OR NOT ONNXRUNTIME_LIB)
+    message(FATAL_ERROR
+        "ONNX Runtime not found.\n"
+        "Set -DONNXRUNTIME_DIR=/path/to/onnxruntime"
+    )
+endif()
 
 # ------------------ YAML-CPP ------------------
 find_package(yaml-cpp REQUIRED)
@@ -28,8 +48,11 @@ add_executable(onnx_inference
     src/benchmark.cpp
 )
 
-# ------------------ Link libraries ------------------
+# Include directories
+target_include_directories(onnx_inference PRIVATE ${ONNXRUNTIME_INCLUDE_DIR})
+
+# Link libraries
 target_link_libraries(onnx_inference
-    onnxruntime
+    ${ONNXRUNTIME_LIB}
     yaml-cpp::yaml-cpp
 )

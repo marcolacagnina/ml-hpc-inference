@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <onnxruntime/onnxruntime_cxx_api.h>    // ONNX Runtime C++ API, classes like Ort::Env, Ort::Session, Ort::Value
+#include <onnxruntime_cxx_api.h>    // ONNX Runtime C++ API, classes like Ort::Env, Ort::Session, Ort::Value
 #include <yaml-cpp/yaml.h>                      // YAML parsing library for reading config.yaml
 
 /*
