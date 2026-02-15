@@ -8,8 +8,6 @@ __pycache__/
 build/
 dist/
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
 
 # Virtual Environment
 venv/
@@ -48,3 +46,11 @@ Thumbs.db
 # Logs
 # ----------------------
 *.log
+
+
+# ----------------------
+# Docker artifacts
+# ----------------------
+*.tar               
+*.img               
+

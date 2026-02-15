@@ -5,9 +5,9 @@ import torch.optim as optim
 import hydra
 from omegaconf import DictConfig        # type of configuration Hydra
 
-from ml_src.model import SimpleMLP
-from ml_src.data_loader import get_dataloaders
-from ml_src.export_onnx import export_model_to_onnx
+from model import SimpleMLP
+from data_loader import get_dataloaders
+from export_onnx import export_model_to_onnx
 
 from hydra.utils import get_original_cwd
 
