@@ -42,10 +42,18 @@ endif()
 # ------------------ YAML-CPP ------------------
 find_package(yaml-cpp REQUIRED)
 
+if(TARGET yaml-cpp::yaml-cpp)
+    set(YAMLCPP_TARGET yaml-cpp::yaml-cpp)
+elseif(TARGET yaml-cpp)
+    set(YAMLCPP_TARGET yaml-cpp)
+else()
+    message(FATAL_ERROR "yaml-cpp target not found")
+endif()
+
+
 # ------------------ Executable ------------------
 add_executable(onnx_inference
     src/main.cpp
-    src/benchmark.cpp
 )
 
 # Include directories
@@ -54,5 +62,5 @@ target_include_directories(onnx_inference PRIVATE ${ONNXRUNTIME_INCLUDE_DIR})
 # Link libraries
 target_link_libraries(onnx_inference
     ${ONNXRUNTIME_LIB}
-    yaml-cpp::yaml-cpp
+    ${YAMLCPP_TARGET}
 )
