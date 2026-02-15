@@ -60,6 +60,12 @@ jobs:
         with:
           name: exported-model
           path: models
+      
+      - name: Place model in expected path
+        run: |
+          mkdir -p cpp_inference/../../models
+          cp models/model.onnx cpp_inference/../../models/
+
 
       - name: Install dependencies
         run: |

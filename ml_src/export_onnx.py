@@ -7,7 +7,7 @@ def export_model_to_onnx(model, output_path: str, input_size: int, device="cpu")
     Args:
         model: trained PyTorch model
         output_path (str): destination path for .onnx file
-        input_size (int):p input feature size
+        input_size (int): input feature size
         device (str): device for dummy input
     """
     model.eval()
