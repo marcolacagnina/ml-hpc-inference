@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: exported-model
-          path: models/model.onnx
+          path: models
 
   # -------------------- JOB 2: Build C++ Inference Engine --------------------
   cpp-build-check:
@@ -65,6 +65,7 @@ jobs:
         run: |
           mkdir -p cpp_inference/../../models
           cp models/model.onnx cpp_inference/../../models/
+          cp models/model.onnx.data cpp_inference/../../models/
 
 
       - name: Install dependencies
