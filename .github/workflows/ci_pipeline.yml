@@ -1,6 +1,5 @@
 name: ML & HPC CI Pipeline
 
-# Execute on each push or pull request in the main branch
 on:
   push:
     branches: [ "main" ]
@@ -8,91 +7,91 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # JOB 1: Python Quality & Testing
+  # -------------------- JOB 1: Python Quality & Testing --------------------
   python-test-and-export:
     runs-on: ubuntu-latest
     steps:
-    - name: Code Checkout
-      uses: actions/checkout@v3
+      - name: Code Checkout
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest flake8 onnx
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest flake8 onnx
 
-    - name: Linting with flake8
-      run: |
-        flake8 ml_src tests --count --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Linting with flake8
+        run: |
+          flake8 ml_src tests --count --select=E9,F63,F7,F82 --show-source --statistics
 
-    - name: Execute unit tests
-      run: |
-        pytest tests/
+      - name: Execute unit tests
+        run: |
+          pytest tests/
 
-    - name: Test ONNX export specifically
-      run: |
-        pytest tests/test_onnx_export.py -v
+      - name: Test ONNX export specifically
+        run: |
+          pytest tests/test_onnx_export.py -v
 
-    - name: Export model for C++ job
-      run: |
-        mkdir -p models
-        python <<EOF
+      - name: Export model for C++ job
+        run: |
+          mkdir -p models
+          cat <<EOF > export_model.py
 from ml_src.model import SimpleMLP
 from ml_src.export_onnx import export_model_to_onnx
 
 model = SimpleMLP(input_size=10, hidden_size=20, output_size=1)
 export_model_to_onnx(model=model, output_path="models/model.onnx", input_size=10)
 EOF
+          python export_model.py
 
-    - name: Upload ONNX model artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: exported-model
-        path: models/model.onnx
+      - name: Upload ONNX model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: exported-model
+          path: models/model.onnx
 
-  # JOB 2: Build C++ Inference Engine
+  # -------------------- JOB 2: Build C++ Inference Engine --------------------
   cpp-build-check:
     needs: python-test-and-export
     runs-on: ubuntu-latest
     steps:
-    - name: Code Checkout
-      uses: actions/checkout@v3
-    
-    - name: Download ONNX model
-      uses: actions/download-artifact@v4
-      with:
-        name: exported-model
-        path: models
+      - name: Code Checkout
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++ libyaml-cpp-dev wget tar
+      - name: Download ONNX model
+        uses: actions/download-artifact@v4
+        with:
+          name: exported-model
+          path: models
 
-    - name: Download and setup ONNX Runtime (Linux)
-      run: |
-        wget https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz
-        tar -xvzf onnxruntime-linux-x64-1.24.1.tgz
-        export ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1
-        echo "ONNXRUNTIME_HOME=$PWD/onnxruntime-linux-x64-1.24.1" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libyaml-cpp-dev wget tar
 
-    - name: Configure CMake
-      run: |
-        mkdir -p cpp_inference/build
-        cd cpp_inference/build
-        cmake .. -DONNXRUNTIME_DIR=$ONNXRUNTIME_HOME
+      - name: Download and setup ONNX Runtime (Linux)
+        run: |
+          wget https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz
+          tar -xvzf onnxruntime-linux-x64-1.24.1.tgz
+          echo "ONNXRUNTIME_HOME=$GITHUB_WORKSPACE/onnxruntime-linux-x64-1.24.1" >> $GITHUB_ENV
 
-    - name: Build C++ inference
-      run: |
-        cd cpp_inference/build
-        make -j$(nproc)
+      - name: Configure CMake
+        run: |
+          mkdir -p cpp_inference/build
+          cd cpp_inference/build
+          cmake .. -DONNXRUNTIME_DIR=${{ env.ONNXRUNTIME_HOME }}
 
-    - name: Run C++ inference test
-      run: |
-        cd cpp_inference/build
-        ./onnx_inference
+      - name: Build C++ inference
+        run: |
+          cd cpp_inference/build
+          make -j$(nproc)
+
+      - name: Run C++ inference test
+        run: |
+          cd cpp_inference/build
+          ./onnx_inference
