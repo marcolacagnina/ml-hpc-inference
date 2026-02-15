@@ -15,7 +15,7 @@
 
 ## Introduction
 
-This works demonstrates a full ML & HPC inference pipeline integrating:
+This works demonstrates a full ML & HPC inference pipeline, bridging the gap between Data Science research (Python) and strict Real-Time Production environments (C++), integrating:
 - Training a **PyTorch** MLP model with configurable hyperparameters using **Hydra**.
 - Tracking experiments and artifacts with **MLflow**.
 - Exporting models to **ONNX** format for high-performance inference.
